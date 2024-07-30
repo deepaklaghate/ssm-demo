@@ -21,7 +21,7 @@ Resources:
   Function:
     Type: "AWS::Lambda::Function"
     Properties:
-      Handler: "com.example.demo.SSMLambdaHandler::handle"
+      Handler: "com.example.demo.SSMHandler::handleRequest"
       Role: !GetAtt LambdaExecutionRole.Arn
       FunctionName: !Ref FunctionName
       Code:
