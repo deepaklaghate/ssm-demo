@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+    This template create lambda exercise_lambda Function.
+Parameters:
+    FunctionName:
+      Type: String
+      Description: Lambda function name Like - exercise_lambda.
+      Default: exercise_lambda
+      MinLength: 1
+      MaxLength: 128
+      AllowedPattern: '^[\w ]+$'
+      ConstraintDescription: Alphanumeric and spaces.
+    S3BucketNameOfDummyJar:
+      Type: String
+      Description: S3 Bucket of Jar.
+      Default: my-bucket
+      MinLength: 1
+      MaxLength: 128
+Resources:
+# Create lambda Function
+  Function:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Handler: "com.example.demo.SSMLambdaHandler::handle"
+      Role: !GetAtt LambdaExecutionRole.Arn
+      FunctionName: !Ref FunctionName
+      Code:
+        S3Bucket: !Ref S3BucketNameOfDummyJar
+        S3Key: "ssm.jar"
+      Runtime: java8
+      MemorySize: 3008
+      Timeout: 180
+    LambdaExecutionRole:
+        Type: AWS::IAM::Role
+        Properties:
+          AssumeRolePolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Principal:
+                  Service:
+                    - lambda.amazonaws.com
+                Action:
+                  - sts:AssumeRole
+          Path: /
+          Policies:
+            - PolicyName: root
+              PolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                  - Effect: Allow
+                    Action:
+                      - logs:*
+                    Resource: arn:aws:logs:*:*:*
+Outputs:
+    LambdaFunctionARN:
+        Description: Lambda Name.
+        Value: !GetAtt Function.Arn
+    LambdaFunctionName:
+        Description: Lambda Name.
+        Value: !Ref FunctionName
